@@ -1,26 +1,9 @@
+import mongoose from "mongoose";
+
 const IngredientSchema = new mongoose.Schema({
   name: String,
   quantity: String,
 });
-
-const CommentSchema = new mongoose.Schema(
-  {
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    content: String,
-    likes: {
-      type: Array,
-      default: [],
-    },
-    replies: {
-      type: mongoose.Schema.Types.Mixed,
-      default: [],
-    },
-  },
-  { timestamps: true }
-);
 
 const RecipeSchema = new mongoose.Schema(
   {
@@ -52,11 +35,15 @@ const RecipeSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    totalLikes: {
+      type: Number,
+      default: 0,
+    },
     usersFavorited: {
       type: Array,
       default: [],
     },
-    replies: [CommentSchema],
+    replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }],
   },
   { timestamps: true }
 );

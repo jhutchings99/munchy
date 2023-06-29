@@ -7,8 +7,8 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
-// import userRoutes from "./routes/users";
-// import recipeRoutes from "./routes/recipes";
+import userRoutes from "./routes/users.js";
+import recipeRoutes from "./routes/recipes.js";
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
@@ -24,8 +24,8 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 /* ROUTES */
 app.use("/auth", authRoutes);
-// app.use("/users", userRoutes);
-// app.use("/recipes", recipeRoutes);
+app.use("/users", userRoutes);
+app.use("/recipes", recipeRoutes);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6001;

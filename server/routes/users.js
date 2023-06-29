@@ -1,22 +1,32 @@
 import express from "express";
 import {
   getUser,
-  createReply,
+  createRecipeReply,
+  addRemoveRecipeLike,
   addRemoveFavorite,
-  addRemoveLike,
+  addRemoveReplyLike,
+  createReplyReply,
 } from "../controllers/users.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
 /* READ */
-router.get("/:id", getUser);
+router.get("/:userId", getUser);
 
 /* POST */
-router.post("/:id/recipes/:recipeId/reply", createReply);
+router.post("/:userId/recipes/:recipeId/reply", createRecipeReply);
+router.post(
+  "/:userId/recipes/:recipeId/replies/:replyId/reply",
+  createReplyReply
+);
 
 /* UPDATE */
-router.patch("/:id/recipes/:recipeId/favorite", addRemoveFavorite);
-router.patch("/:id/recipes/:recipeId/like", addRemoveLike);
+router.patch("/:userId/recipes/:recipeId/favorite", addRemoveFavorite);
+router.patch("/:userId/recipes/:recipeId/like", addRemoveRecipeLike);
+router.patch(
+  "/:userId/recipes/:recipeId/replies/:replyId/like",
+  addRemoveReplyLike
+);
 
 export default router;
