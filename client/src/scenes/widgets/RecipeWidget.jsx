@@ -38,23 +38,49 @@ const RecipeWidget = ({
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const navigate = useNavigate();
+  const currentURL = location.href;
 
   return (
-    <div className="border-b-[1px] border-primary w-full p-2">
+    <div
+      className="border-b-[1px] border-primary w-full p-2 bg-white hover:cursor-pointer hover:bg-gray-100"
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate(`/recipes/${recipeId}`, {
+          state: { recipeId: recipeId, previousURL: currentURL },
+        });
+      }}
+    >
       <div className="flex gap-1">
         <img
           src={postedBy.profileImage}
           alt={`${postedBy.username}'s profile image`}
-          className="h-12 w-12 rounded-full"
+          className="h-12 w-12 rounded-full hover:cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/users/${postedBy._id}`, {
+              state: { userId: postedBy._id, previousURL: currentURL },
+            });
+          }}
         />
         <div>
           <div className="flex gap-1 items-center">
-            <p>{postedBy.username}</p>
+            <p
+              className="hover:cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/users/${postedBy._id}`, {
+                  state: { userId: postedBy._id, previousURL: currentURL },
+                });
+              }}
+            >
+              {postedBy.username}
+            </p>
             <p
               className="hover:underline hover:cursor-pointer"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 navigate(`/users/${postedBy._id}`, {
-                  state: { userId: postedBy._id },
+                  state: { userId: postedBy._id, previousURL: currentURL },
                 });
               }}
             >

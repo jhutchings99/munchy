@@ -6,8 +6,20 @@ import {
   BsFillBookmarkFill,
 } from "react-icons/bs";
 import Logo from "../../assets/munchy-logo.png";
+import { useSelector } from "react-redux";
+import { redirect, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const currentUser = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const currentURL = location.href;
+  const splitURL = currentURL.split("/");
+
+  let recipeId;
+  if (splitURL[3] === "recipes") {
+    recipeId = splitURL[4];
+  }
+
   return (
     <div className="fixed bottom-0 flex justify-around md:justify-center md:gap-28 w-full p-2 bg-background items-center md:flex-col md:top-0 md:w-[30vw] md:items-start md:pl-12 lg:w-[20vw] lg:pl-19">
       <div className="flex items-center gap-2 text-lg hover:cursor-pointer select-none hidden md:flex">
@@ -21,6 +33,16 @@ const Navbar = () => {
         className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
         data-te-toggle="tooltip"
         title="Home"
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/home`, {
+            state: {
+              userId: currentUser._id,
+              previousURL: currentURL,
+              recipeId: recipeId,
+            },
+          });
+        }}
       >
         <BsFillHouseFill className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Home</p>
@@ -53,6 +75,16 @@ const Navbar = () => {
         className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
         data-te-toggle="tooltip"
         title="Profile"
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/users/${currentUser._id}`, {
+            state: {
+              userId: currentUser._id,
+              previousURL: currentURL,
+              recipeId: recipeId,
+            },
+          });
+        }}
       >
         <BsFillPersonFill className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Profile</p>

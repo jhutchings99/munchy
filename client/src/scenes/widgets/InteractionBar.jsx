@@ -43,7 +43,8 @@ const InteractionBar = () => {
         className="flex items-center gap-1 hover:cursor-pointer"
         data-te-toggle="tooltip"
         title="Copy URL"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           copyUrlToClip();
         }}
       >

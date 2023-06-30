@@ -41,6 +41,24 @@ export const getReplies = async (req, res) => {
   }
 };
 
+export const getUsersRecipes = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+
+    let userRecipes = [];
+
+    for (const recipeId of user.recipes) {
+      const recipe = await Recipe.findById(recipeId);
+      userRecipes.push(recipe);
+    }
+
+    res.status(200).json(userRecipes);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
 export const getReply = async (req, res) => {
   try {
     const { recipeId, replyId } = req.params;
@@ -91,6 +109,9 @@ export const createRecipe = async (req, res) => {
       },
     });
     await newRecipe.save();
+
+    user.recipes.push(newRecipe._id);
+    await user.save();
 
     const recipes = await Recipe.find();
 
