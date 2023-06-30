@@ -50,7 +50,14 @@ const RecipeWidget = ({
         <div>
           <div className="flex gap-1 items-center">
             <p>{postedBy.username}</p>
-            <p className="hover:underline hover:cursor-pointer">
+            <p
+              className="hover:underline hover:cursor-pointer"
+              onClick={() => {
+                navigate(`/users/${postedBy._id}`, {
+                  state: { userId: postedBy._id },
+                });
+              }}
+            >
               @{postedBy.username}
             </p>
             <BsDot />
