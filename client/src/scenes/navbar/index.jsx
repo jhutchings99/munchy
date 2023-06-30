@@ -17,23 +17,43 @@ const Navbar = () => {
         />
         <p className="hidden md:block text-xl font-medium">Munchy</p>
       </div>
-      <div className="flex items-center gap-2 text-lg hover:cursor-pointer select-none">
+      <div
+        className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
+        data-te-toggle="tooltip"
+        title="Home"
+      >
         <BsFillHouseFill className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Home</p>
       </div>
-      <div className="flex items-center gap-2 text-lg hover:cursor-pointer select-none">
+      <div
+        className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
+        data-te-toggle="tooltip"
+        title="Search"
+      >
         <BsSearch className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Search</p>
       </div>
-      <div className="flex items-center gap-2 text-lg md:order-1 hover:cursor-pointer select-none">
+      <div
+        className="flex items-center gap-2 text-lg md:order-1 hover:cursor-pointer select-none"
+        data-te-toggle="tooltip"
+        title="Munch"
+      >
         <BsFillPlusCircleFill className="h-10 w-10 text-primary hover:cursor-pointer" />
         <p className="hidden md:block">Munch</p>
       </div>
-      <div className="flex items-center gap-2 text-lg hover:cursor-pointer select-none">
+      <div
+        className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
+        data-te-toggle="tooltip"
+        title="Bookmarks"
+      >
         <BsFillBookmarkFill className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Bookmarks</p>
       </div>
-      <div className="flex items-center gap-2 text-lg hover:cursor-pointer select-none">
+      <div
+        className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
+        data-te-toggle="tooltip"
+        title="Profile"
+      >
         <BsFillPersonFill className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Profile</p>
       </div>
