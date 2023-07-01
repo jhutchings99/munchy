@@ -154,7 +154,7 @@ const RecipePage = () => {
             />
           </div>
         </div>
-        <InteractionBar />
+        <InteractionBar recipeId={recipe._id} />
       </div>
     </div>
   );

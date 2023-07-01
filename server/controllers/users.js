@@ -78,9 +78,11 @@ export const addRemoveFavorite = async (req, res) => {
       recipe.usersFavorited = recipe.usersFavorited.filter(
         (id) => id !== userId
       );
+      recipe.totalFavorites -= 1;
     } else {
       user.favoriteRecipes.push(recipeId);
       recipe.usersFavorited.push(userId);
+      recipe.totalFavorites += 1;
     }
 
     await user.save();
@@ -105,7 +107,7 @@ export const addRemoveRecipeLike = async (req, res) => {
       recipe.totalLikes -= 1;
     } else {
       user.likedRecipes.push(recipeId);
-      recipe.usersFavorited.push(userId);
+      recipe.likes.push(userId);
 
       recipe.totalLikes += 1;
     }

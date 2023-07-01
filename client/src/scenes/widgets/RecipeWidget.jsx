@@ -98,7 +98,7 @@ const RecipeWidget = ({
           />
         </div>
       </div>
-      <InteractionBar />
+      <InteractionBar recipeId={recipeId} />
     </div>
   );
 };
