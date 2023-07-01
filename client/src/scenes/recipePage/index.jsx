@@ -3,11 +3,20 @@ import { useEffect, useState } from "react";
 import { BsDot, BsArrowLeft } from "react-icons/bs";
 import InteractionBar from "../widgets/InteractionBar";
 import Navbar from "../navbar";
+import ReplyWidget from "../widgets/ReplyWidget";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
 const getRecipe = async (URL, recipeId) => {
   const response = await fetch(`${URL}/recipes/${recipeId}`, {
+    method: "GET",
+  });
+  const data = await response.json();
+  return data;
+};
+
+const getRecipeReplies = async (URL, recipeId) => {
+  const response = await fetch(`${URL}/recipes/${recipeId}/replies`, {
     method: "GET",
   });
   const data = await response.json();
@@ -44,17 +53,21 @@ const RecipePage = () => {
   const currentURL = location.href;
 
   const [recipe, setRecipe] = useState(null);
+  const [replies, setReplies] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const recipeData = await getRecipe(URL, recipeId);
       setRecipe(recipeData);
+
+      const recipeReplies = await getRecipeReplies(URL, recipeId);
+      setReplies(recipeReplies);
     };
 
     fetchData();
   }, []);
 
-  if (recipe === null) {
+  if (recipe === null || replies === null) {
     return (
       <div
         role="status"
@@ -85,14 +98,14 @@ const RecipePage = () => {
     <div>
       <Navbar />
       <div className="border-b-[1px] border-primary w-full p-2 bg-white">
-        <div
-          className="m-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate("/home");
-          }}
-        >
-          <BsArrowLeft className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100" />
+        <div className="m-2">
+          <BsArrowLeft
+            className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate("/home");
+            }}
+          />
         </div>
         <div className="flex gap-1">
           <img
@@ -155,6 +168,20 @@ const RecipePage = () => {
           </div>
         </div>
         <InteractionBar recipeId={recipe._id} />
+      </div>
+      <div>
+        {replies.map(
+          ({ _id, replyId, postedBy, content, createdAt, recipeId }) => (
+            <ReplyWidget
+              key={_id}
+              replyId={_id}
+              content={content}
+              postedBy={postedBy}
+              createdAt={createdAt}
+              recipeId={recipe._id}
+            />
+          )
+        )}
       </div>
     </div>
   );

@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const ReplySchema = new mongoose.Schema(
   {
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    postedBy: {
+      type: Object,
+      default: {},
     },
     content: String,
     likes: {

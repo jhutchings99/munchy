@@ -23,7 +23,11 @@ export const createRecipeReply = async (req, res) => {
     const recipe = await Recipe.findById(recipeId);
 
     const newReply = new Reply({
-      author: user._id,
+      postedBy: {
+        _id: user._id,
+        username: user.username,
+        profileImage: user.profileImage,
+      },
       content,
     });
 
@@ -48,7 +52,11 @@ export const createReplyReply = async (req, res) => {
     const parentReply = await Reply.findById(replyId);
 
     const newReply = new Reply({
-      author: user._id,
+      postedBy: {
+        _id: user._id,
+        username: user.username,
+        profileImage: user.profileImage,
+      },
       content,
     });
 
