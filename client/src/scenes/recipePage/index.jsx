@@ -65,7 +65,12 @@ const RecipePage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [recipeId]);
+
+  const handleNewReply = async () => {
+    const updatedReplies = await getRecipeReplies(URL, recipeId);
+    setReplies(updatedReplies);
+  };
 
   if (recipe === null || replies === null) {
     return (
@@ -95,7 +100,7 @@ const RecipePage = () => {
   }
 
   return (
-    <div>
+    <div className="mb-24">
       <Navbar />
       <div className="border-b-[1px] border-primary w-full p-2 bg-white">
         <div className="m-2">
@@ -167,7 +172,7 @@ const RecipePage = () => {
             />
           </div>
         </div>
-        <InteractionBar recipeId={recipe._id} />
+        <InteractionBar recipeId={recipe._id} onNewReply={handleNewReply} />
       </div>
       <div>
         {replies.map(

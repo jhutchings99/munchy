@@ -18,7 +18,11 @@ const copyUrlToClip = () => {
   navigator.clipboard.writeText(url);
 };
 
-const InteractionBar = ({ recipeId = null, replyId = null }) => {
+const InteractionBar = ({
+  recipeId = null,
+  replyId = null,
+  onNewReply = null,
+}) => {
   const currentUser = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const navigate = useNavigate();
@@ -35,6 +39,8 @@ const InteractionBar = ({ recipeId = null, replyId = null }) => {
 
   const [isFavorited, setIsFavorited] = useState(false);
   const [favoritesCount, setFavoritesCount] = useState(0);
+
+  const [repliesCount, setRepliesCount] = useState(0);
 
   const [isReplying, setIsReplying] = useState(false);
 
@@ -106,7 +112,10 @@ const InteractionBar = ({ recipeId = null, replyId = null }) => {
     );
 
     if (response.ok) {
-      console.log("good");
+      setRepliesCount(repliesCount + 1);
+      if (onNewReply) {
+        onNewReply();
+      }
     }
   };
 
@@ -148,9 +157,6 @@ const InteractionBar = ({ recipeId = null, replyId = null }) => {
     return recipe.usersFavorited.includes(currentUser._id);
   };
 
-  //   console.log(`recipeId: ${recipeId}`);
-  //   console.log(`replyId: ${replyId}`);
-
   useEffect(() => {
     const fetchRecipeData = async () => {
       const postLiked = await isPostLiked();
@@ -162,6 +168,8 @@ const InteractionBar = ({ recipeId = null, replyId = null }) => {
       const recipe = await getRecipe();
       setLikesCount(recipe.likes.length);
       setFavoritesCount(recipe.usersFavorited.length);
+
+      setRepliesCount(recipe.replies.length);
 
       setRecipe(recipe);
     };
@@ -281,7 +289,7 @@ const InteractionBar = ({ recipeId = null, replyId = null }) => {
         }}
       >
         <BsChat />
-        <p>20</p>
+        <p>{repliesCount}</p>
       </div>
       {recipeId && (
         <div
