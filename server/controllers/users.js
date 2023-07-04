@@ -149,3 +149,28 @@ export const addRemoveReplyLike = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+export const followUnfollowUser = async (req, res) => {
+  try {
+    const { userId, otherUserId } = req.params;
+    const user = await User.findById(userId);
+    const userToFollow = await User.findById(otherUserId);
+
+    if (user.following.includes(otherUserId)) {
+      user.following = user.following.filter((id) => id !== otherUserId);
+      userToFollow.followers = userToFollow.followers.filter(
+        (id) => id !== userId
+      );
+    } else {
+      user.following.push(otherUserId);
+      userToFollow.followers.push(userId);
+    }
+
+    await user.save();
+    await userToFollow.save();
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};

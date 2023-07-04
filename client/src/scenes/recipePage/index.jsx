@@ -65,7 +65,7 @@ const RecipePage = () => {
     };
 
     fetchData();
-  }, [recipeId]);
+  }, []);
 
   const handleNewReply = async () => {
     const updatedReplies = await getRecipeReplies(URL, recipeId);

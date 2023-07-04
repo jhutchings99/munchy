@@ -36,7 +36,6 @@ const ReplyWidget = ({
   const navigate = useNavigate();
   const currentURL = location.href;
 
-  console.log(recipeId);
   return (
     <div className="border-b-[1px] border-b-primary">
       <div className="flex gap-1 m-2">

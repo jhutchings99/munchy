@@ -6,6 +6,7 @@ import {
   addRemoveFavorite,
   addRemoveReplyLike,
   createReplyReply,
+  followUnfollowUser,
 } from "../controllers/users.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -28,5 +29,6 @@ router.patch(
   "/:userId/recipes/:recipeId/replies/:replyId/like",
   addRemoveReplyLike
 );
+router.patch("/:userId/follow/:otherUserId", followUnfollowUser);
 
 export default router;
