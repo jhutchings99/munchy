@@ -65,6 +65,9 @@ const UserProfilePage = () => {
   const { state } = useLocation();
   const { userId, previousURL, recipeId } = state;
 
+  const [numFollowers, setNumFollowers] = useState(0);
+  const [numFollowing, setNumFollowing] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       const userData = await getUser(URL, userId);
@@ -72,6 +75,8 @@ const UserProfilePage = () => {
       setUser(userData);
       setUserRecipes(userRecipes);
       setIsLoggedInUser(userInState._id === userData._id);
+      setNumFollowers(userData.followers.length);
+      setNumFollowing(userData.following.length);
     };
 
     fetchData();
@@ -107,20 +112,20 @@ const UserProfilePage = () => {
   return (
     <div>
       <Navbar />
-      <div
-        className="m-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          navigate(extractPath(previousURL), {
-            state: {
-              userId: userId,
-              previousURL: currentURL,
-              recipeId: recipeId,
-            },
-          });
-        }}
-      >
-        <BsArrowLeft className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100" />
+      <div className="m-2">
+        <BsArrowLeft
+          className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(extractPath(previousURL), {
+              state: {
+                userId: userId,
+                previousURL: currentURL,
+                recipeId: recipeId,
+              },
+            });
+          }}
+        />
       </div>
       <div className="flex justify-between items-center m-2">
         <img
@@ -151,12 +156,34 @@ const UserProfilePage = () => {
         </p>
       </div>
       <div className="flex items-center justify-center gap-4 mb-2">
-        <div className="flex gap-1 hover:underline">
-          <p>123</p>
+        <div
+          className="flex gap-1 hover:underline hover:cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate("/users", {
+              state: {
+                previousURL: currentURL,
+                followers: false,
+              },
+            });
+          }}
+        >
+          <p>{numFollowing}</p>
           <p className="font-thin">Following</p>
         </div>
-        <div className="flex gap-1 hover:underline">
-          <p>2342</p>
+        <div
+          className="flex gap-1 hover:underline hover:cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate("/users", {
+              state: {
+                previousURL: currentURL,
+                followers: true,
+              },
+            });
+          }}
+        >
+          <p>{numFollowers}</p>
           <p className="font-thin">Followers</p>
         </div>
       </div>
