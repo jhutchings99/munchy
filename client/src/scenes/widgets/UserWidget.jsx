@@ -11,19 +11,27 @@ const getUser = async (URL, userId) => {
   return data;
 };
 
-const UserWidget = ({ userId, onNewFollow = null }) => {
-  const [user, setUser] = useState(null);
+const UserWidget = ({ userId, onFollow = null }) => {
   const currentUser = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
+
+  const [user, setUser] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [numFollowing, setNumFollowing] = useState(0);
+  const [numFollowers, setNumFollowers] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       const user = await getUser(URL, userId);
+      const userInState = await getUser(URL, currentUser._id);
       setUser(user);
+      setIsFollowing(userInState.following.includes(userId));
+      setNumFollowing(userInState.following.length);
+      setNumFollowers(userInState.followers.length);
     };
 
     fetchData();
-  }, [userId]);
+  }, []);
 
   const followUnfollowUser = async () => {
     const response = await fetch(
@@ -35,7 +43,13 @@ const UserWidget = ({ userId, onNewFollow = null }) => {
     );
 
     if (response.ok) {
-      console.log("good!");
+      if (isFollowing) {
+        setIsFollowing(!isFollowing);
+        onFollow();
+      } else {
+        setIsFollowing(!isFollowing);
+        onFollow();
+      }
     }
   };
 
@@ -88,7 +102,7 @@ const UserWidget = ({ userId, onNewFollow = null }) => {
           )}
         </div>
       </div>
-      {!currentUser.followers.includes(userId) && (
+      {!isFollowing && (
         <button
           className="text-sm bg-primary text-white px-6 py-1 rounded-md"
           onClick={(e) => {
@@ -99,7 +113,7 @@ const UserWidget = ({ userId, onNewFollow = null }) => {
           Follow
         </button>
       )}
-      {currentUser.followers.includes(userId) && (
+      {isFollowing && (
         <button
           className="text-sm bg-primary text-white px-6 py-1 rounded-md"
           onClick={(e) => {

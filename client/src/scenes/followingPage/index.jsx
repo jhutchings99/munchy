@@ -5,6 +5,16 @@ import { BsFillCalendarDateFill, BsArrowLeft } from "react-icons/bs";
 import Navbar from "../navbar";
 import UserWidget from "../widgets/UserWidget";
 
+const getUser = async (URL, userId) => {
+  const response = await fetch(`${URL}/users/${userId}`, {
+    method: "GET",
+  });
+  const data = await response.json();
+  return data;
+};
+
+const URL = import.meta.env.VITE_BACKEND_URL;
+
 const extractPath = (url) => {
   const pathRegex = /^https?:\/\/[^/]+(\/[^?#]+)/;
   const matches = url.match(pathRegex);
@@ -48,14 +58,20 @@ const FollowingPage = () => {
   const [numFollowing, setNumFollowing] = useState(0);
 
   useEffect(() => {
-    setNumFollowers(user.followers.length);
-    setNumFollowing(user.following.length);
+    const fetchData = async () => {
+      const userInState = await getUser(URL, user._id);
+      setNumFollowing(userInState.following.length);
+      setNumFollowers(userInState.followers.length);
+    };
+
+    fetchData();
   });
 
-  //   const handleNewFollow = async () => {
-  //     const updatedUser = await getRecipeReplies(URL, recipeId);
-  //     setReplies(updatedReplies);
-  //   };
+  const handleNewFollow = async () => {
+    const userInState = await getUser(URL, user._id);
+    setNumFollowing(userInState.following.length);
+    setNumFollowers(userInState.followers.length);
+  };
 
   return (
     <div>
@@ -134,12 +150,26 @@ const FollowingPage = () => {
       <div className="border-b-[1px] border-b-primary w-full"></div>
       {isFollowersFeed &&
         user.followers.map((userId, index) => {
-          return <UserWidget key={index} userId={userId} />;
+          return (
+            <UserWidget
+              key={index}
+              userId={userId}
+              isFollowersFeed={isFollowersFeed}
+              onFollow={handleNewFollow}
+            />
+          );
         })}
 
       {!isFollowersFeed &&
         user.following.map((userId, index) => {
-          return <UserWidget key={index} userId={userId} />;
+          return (
+            <UserWidget
+              key={index}
+              userId={userId}
+              isFollowersFeed={isFollowersFeed}
+              onFollow={handleNewFollow}
+            />
+          );
         })}
     </div>
   );
