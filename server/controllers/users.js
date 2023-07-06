@@ -13,6 +13,24 @@ export const getUser = async (req, res) => {
   }
 };
 
+export const getUserBookmarks = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+
+    const userBookmarks = [];
+
+    for (const recipeId of user.favoriteRecipes) {
+      const recipe = await Recipe.findById(recipeId);
+      userBookmarks.push(recipe);
+    }
+
+    res.status(200).json(userBookmarks);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
 /* POST */
 export const createRecipeReply = async (req, res) => {
   try {

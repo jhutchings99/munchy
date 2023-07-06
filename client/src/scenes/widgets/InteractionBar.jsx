@@ -22,6 +22,7 @@ const InteractionBar = ({
   recipeId = null,
   replyId = null,
   onNewReply = null,
+  onBookmarkChange = null,
 }) => {
   const currentUser = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
@@ -94,6 +95,10 @@ const InteractionBar = ({
     if (response.ok) {
       setIsFavorited(!isFavorited);
       setFavoritesCount(isFavorited ? favoritesCount - 1 : favoritesCount + 1);
+      if (onBookmarkChange) {
+        onBookmarkChange();
+        console.log("bookmark change");
+      }
     }
   };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -14,6 +15,8 @@ const getUser = async (URL, userId) => {
 const UserWidget = ({ userId, onFollow = null }) => {
   const currentUser = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
+  const navigate = useNavigate();
+  const currentURL = location.href;
 
   const [user, setUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -81,7 +84,15 @@ const UserWidget = ({ userId, onFollow = null }) => {
     <div className="m-4 flex justify-between items-center">
       <div className="flex gap-2">
         {user.profileImage === "" && (
-          <p className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full">
+          <p
+            className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${user._id}`, {
+                state: { userId: user._id, previousURL: currentURL },
+              });
+            }}
+          >
             {user.username[0]}
           </p>
         )}
@@ -89,12 +100,38 @@ const UserWidget = ({ userId, onFollow = null }) => {
           <img
             src={user.profileImage}
             alt={`${user.username}'s profile image`}
-            className="h-12 w-12"
+            className="h-12 w-12 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${user._id}`, {
+                state: { userId: user._id, previousURL: currentURL },
+              });
+            }}
           />
         )}
         <div>
-          <p className="font-medium text-sm">{user.username}</p>
-          <p className="text-sm">@{user.username}</p>
+          <p
+            className="font-medium text-sm cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${user._id}`, {
+                state: { userId: user._id, previousURL: currentURL },
+              });
+            }}
+          >
+            {user.username}
+          </p>
+          <p
+            className="text-sm cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${user._id}`, {
+                state: { userId: user._id, previousURL: currentURL },
+              });
+            }}
+          >
+            @{user.username}
+          </p>
           {currentUser.followers.includes(userId) && (
             <div className="text-sm font-thin bg-gray-200 text-center rounded-md px-1">
               Follows you

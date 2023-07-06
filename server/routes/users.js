@@ -7,6 +7,7 @@ import {
   addRemoveReplyLike,
   createReplyReply,
   followUnfollowUser,
+  getUserBookmarks,
 } from "../controllers/users.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -14,6 +15,7 @@ const router = express.Router();
 
 /* READ */
 router.get("/:userId", getUser);
+router.get("/:userId/bookmarks", getUserBookmarks);
 
 /* POST */
 router.post("/:userId/recipes/:recipeId/reply", createRecipeReply);

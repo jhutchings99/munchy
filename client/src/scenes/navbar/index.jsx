@@ -67,6 +67,16 @@ const Navbar = () => {
         className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
         data-te-toggle="tooltip"
         title="Bookmarks"
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/bookmarks`, {
+            state: {
+              userId: currentUser._id,
+              previousURL: currentURL,
+              recipeId: recipeId,
+            },
+          });
+        }}
       >
         <BsFillBookmarkFill className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Bookmarks</p>

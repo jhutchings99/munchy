@@ -34,6 +34,7 @@ const RecipeWidget = ({
   pictureUrl,
   postedBy,
   createdAt,
+  onBookmarkChange = null,
 }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
@@ -98,7 +99,7 @@ const RecipeWidget = ({
           />
         </div>
       </div>
-      <InteractionBar recipeId={recipeId} />
+      <InteractionBar recipeId={recipeId} onBookmarkChange={onBookmarkChange} />
     </div>
   );
 };

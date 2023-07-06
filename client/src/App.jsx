@@ -5,6 +5,7 @@ import RecipePage from "./scenes/recipePage";
 import { useSelector } from "react-redux";
 import UserProfilePage from "./scenes/userProfilePage";
 import FollowingPage from "./scenes/followingPage";
+import BookmarksPage from "./scenes/bookmarksPage";
 
 function App() {
   const isAuth = Boolean(useSelector((state) => state.token));
@@ -29,6 +30,10 @@ function App() {
           <Route
             path="/users"
             element={isAuth ? <FollowingPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/bookmarks"
+            element={isAuth ? <BookmarksPage /> : <Navigate to="/" />}
           />
         </Routes>
       </BrowserRouter>
