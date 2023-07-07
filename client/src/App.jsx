@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import UserProfilePage from "./scenes/userProfilePage";
 import FollowingPage from "./scenes/followingPage";
 import BookmarksPage from "./scenes/bookmarksPage";
+import SearchPage from "./scenes/searchPage";
 
 function App() {
   const isAuth = Boolean(useSelector((state) => state.token));
@@ -34,6 +35,10 @@ function App() {
           <Route
             path="/bookmarks"
             element={isAuth ? <BookmarksPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/search"
+            element={isAuth ? <SearchPage /> : <Navigate to="/" />}
           />
         </Routes>
       </BrowserRouter>

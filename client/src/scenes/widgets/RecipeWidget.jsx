@@ -95,7 +95,7 @@ const RecipeWidget = ({
           <img
             src={pictureUrl}
             alt={`Picture of ${title}`}
-            className="aspect-w-16 aspect-h-9"
+            className="aspect-w-16 aspect-h-9 max-w-[60vw] sm:max-w-[50vw] md:max-w-[40vw] lg:max-w-[30vw]"
           />
         </div>
       </div>

@@ -58,7 +58,10 @@ const RecipesWidget = ({ recipeId, isRecipe = false }) => {
 
   if (user === null) {
     return (
-      <div role="status" className=" w-full flex items-center justify-center">
+      <div
+        role="status"
+        className=" w-full h-screen flex items-center justify-center"
+      >
         <svg
           aria-hidden="true"
           className="w-12 h-12 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-primary"

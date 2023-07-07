@@ -51,6 +51,16 @@ const Navbar = () => {
         className="flex items-center gap-2 text-lg hover:cursor-pointer select-none"
         data-te-toggle="tooltip"
         title="Search"
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/search`, {
+            state: {
+              userId: currentUser._id,
+              previousURL: currentURL,
+              recipeId: recipeId,
+            },
+          });
+        }}
       >
         <BsSearch className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Search</p>
