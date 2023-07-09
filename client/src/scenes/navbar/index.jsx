@@ -4,13 +4,41 @@ import {
   BsFillPlusCircleFill,
   BsFillPersonFill,
   BsFillBookmarkFill,
+  BsXLg,
 } from "react-icons/bs";
 import Logo from "../../assets/munchy-logo.png";
 import { useSelector } from "react-redux";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+const URL = import.meta.env.VITE_BACKEND_URL;
 
 const Navbar = () => {
+  const [isMunching, setIsMunching] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const [newRecipeTitle, setNewRecipeTitle] = useState("");
+  const [newRecipeDescription, setNewRecipeDescription] = useState("");
+  const [newRecipeDifficultyLevel, setNewRecipeDifficultyLevel] = useState("");
+  const [newRecipeServings, setNewRecipeServings] = useState("");
+  const [newRecipePrepTime, setNewRecipePrepTime] = useState("");
+  const [newRecipeCookTime, setNewRecipeCookTime] = useState("");
+  const [newRecipeIngredients, setNewRecipeIngredients] = useState("");
+  const [newRecipeSteps, setnewRecipeSteps] = useState("");
+  const [newRecipeCalories, setnewRecipeCalories] = useState("");
+  const [newRecipeProtein, setnewRecipeProtein] = useState("");
+  const [newRecipeFat, setnewRecipeFat] = useState("");
+  const [newRecipeCarbs, setnewRecipeCarbs] = useState("");
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    console.log(file);
+    setSelectedFile(file);
+  };
+
   const currentUser = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const navigate = useNavigate();
   const currentURL = location.href;
   const splitURL = currentURL.split("/");
@@ -19,6 +47,70 @@ const Navbar = () => {
   if (splitURL[3] === "recipes") {
     recipeId = splitURL[4];
   }
+
+  const uploadPicture = async () => {
+    setIsUploading(true);
+    console.log(isUploading);
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUD_PRESET);
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUD_NAME
+        }/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+      console.log(result);
+
+      setIsUploading(false);
+      console.log(isUploading);
+      if (!isUploading) {
+        console.log(result.url);
+        await createRecipe(result.url);
+      }
+    } catch (error) {
+      console.error("Error uploading picture:", error);
+      setIsUploading(false);
+      console.log(isUploading);
+    }
+  };
+
+  const createRecipe = async (recipePicture) => {
+    const response = await fetch(`${URL}/recipes/create/${currentUser._id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: newRecipeTitle,
+        description: newRecipeDescription,
+        difficultyLevel: newRecipeDiffi,
+        servingSize: servings,
+        preparationTime,
+        cookingTime,
+        ingredients,
+        preparationInstructions,
+        calories,
+        protein,
+        fat,
+        carbohydrates,
+        pictureUrl: recipePicture,
+      }),
+    });
+
+    if (response.ok) {
+      console.log("good!");
+    }
+  };
 
   return (
     <div className="fixed bottom-0 flex justify-around md:justify-center md:gap-28 w-full p-2 bg-background items-center md:flex-col md:top-0 md:w-[30vw] md:items-start md:pl-12 lg:w-[20vw] lg:pl-19">
@@ -69,6 +161,9 @@ const Navbar = () => {
         className="flex items-center gap-2 text-lg md:order-1 hover:cursor-pointer select-none"
         data-te-toggle="tooltip"
         title="Munch"
+        onClick={(e) => {
+          setIsMunching(true);
+        }}
       >
         <BsFillPlusCircleFill className="h-10 w-10 text-primary hover:cursor-pointer" />
         <p className="hidden md:block">Munch</p>
@@ -109,6 +204,204 @@ const Navbar = () => {
         <BsFillPersonFill className="h-6 w-6 hover:cursor-pointer" />
         <p className="hidden md:block">Profile</p>
       </div>
+      {isMunching && (
+        <div className="flex justify-center items-center">
+          {/* BLUR BACKGROUND */}
+          <div
+            className="h-full w-full bg-gray-100 fixed top-0 left-0 opacity-40"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMunching(false);
+            }}
+          ></div>
+          <div className="w-[90vw] h-[90vh] overflow-x-hidden overflow-y-auto overscroll-contain fixed top-[5vh] left-[5vw] bg-background z-1 shadow-lg rounded-md">
+            <BsXLg
+              className="text-2xl bg-background hover:bg-gray-100 rounded-full m-4 hover:cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsMunching(false);
+              }}
+            />
+            <div>
+              <div className="ml-4 mr-4 my-2">
+                <p className="text-sm font-medium">Title</p>
+                <input
+                  type="text"
+                  className="rounded-md w-full p-1 text-sm"
+                  placeholder="Title..."
+                  onChange={(e) => {
+                    setNewRecipeTitle(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="ml-4 mr-4 my-2">
+                <p className="text-sm font-medium">Description</p>
+                <textarea
+                  type="text"
+                  className="rounded-md w-full p-1 text-sm"
+                  placeholder="Description..."
+                  onChange={(e) => {
+                    setNewRecipeDescription(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="ml-4 mr-4 my-2 flex items-center w-full">
+                <div className="w-full">
+                  <p className="text-sm font-medium">Difficulty Level</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Difficuly Level..."
+                    onChange={(e) => {
+                      setNewRecipeDifficultyLevel(e.target.value);
+                    }}
+                  />
+                </div>
+
+                <div className="w-full">
+                  <p className="text-sm font-medium">Servings</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Servings..."
+                    onChange={(e) => {
+                      setNewRecipeServings(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="ml-4 mr-4 my-2 flex items-center w-full">
+                <div className="w-full">
+                  <p className="text-sm font-medium">Preparation Time</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Preparation time..."
+                    onChange={(e) => {
+                      setNewRecipePrepTime(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-sm font-medium">Cooking Time</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Cooking time..."
+                    onChange={(e) => {
+                      setNewRecipeCookTime(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="ml-4 mr-4 my-2">
+                <p className="text-sm font-medium">Ingredients</p>
+                <textarea
+                  type="text"
+                  className="rounded-md w-full p-1 text-sm"
+                  placeholder="Quantity space ingredient, one per line... eg: 200g pasta"
+                  onChange={(e) => {
+                    setNewRecipeIngredients(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="ml-4 mr-4 my-2">
+                <p className="text-sm font-medium">Preparation Instructions</p>
+                <textarea
+                  type="text"
+                  className="rounded-md w-full p-1 text-sm"
+                  placeholder="Steps, one per line..."
+                  onChange={(e) => {
+                    setNewRecipePrepTime(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="ml-4 mr-4 my-2 flex items-center w-full">
+                <div className="w-full">
+                  <p className="text-sm font-medium">Calories</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Calories..."
+                    onChange={(e) => {
+                      setnewRecipeCalories(e.target.value);
+                    }}
+                  />
+                </div>
+
+                <div className="w-full">
+                  <p className="text-sm font-medium">Protein</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Protein..."
+                    onChange={(e) => {
+                      setnewRecipeProtein(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="ml-4 mr-4 my-2 flex items-center w-full">
+                <div className="w-full">
+                  <p className="text-sm font-medium">Fat</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Fat..."
+                    onChange={(e) => {
+                      setnewRecipeFat(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-sm font-medium">Carbohydrates</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-[7rem] p-1 text-sm"
+                    placeholder="Carbohydrates..."
+                    onChange={(e) => {
+                      setnewRecipeCarbs(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="ml-4 mr-4 my-2">
+                {/* <p className="text-sm font-medium">Picture</p>
+                <input type="file" className="rounded-md w-full" /> */}
+
+                <label className="text-sm font-medium" htmlFor="file_input">
+                  Picture
+                </label>
+                <input
+                  className="block w-full text-sm border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:border-none file:text-black file:bg-gray-200"
+                  id="file_input"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+              </div>
+              {/* <div className="ml-4 mr-4 my-2">
+                <p className="text-sm font-medium">Tags</p>
+                <input
+                  type="text"
+                  className="rounded-md w-full p-1 text-sm"
+                  placeholder="Tags..."
+                />
+              </div> */}
+              <div className="ml-4 mr-4 my-4 flex justify-center items-center">
+                <button
+                  className=" bg-primary text-white w-full rounded-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    uploadPicture();
+                  }}
+                >
+                  Munch
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

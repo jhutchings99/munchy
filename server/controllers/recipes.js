@@ -1,6 +1,16 @@
 import Recipe from "../models/Recipe.js";
 import Reply from "../models/Reply.js";
 import User from "../models/User.js";
+import cloudinary from "cloudinary";
+import dotenv from "dotenv";
+dotenv.config();
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+});
 
 /* READ */
 export const getRecipes = async (req, res) => {
@@ -76,32 +86,41 @@ export const createRecipe = async (req, res) => {
     const { userId } = req.params;
     const user = await User.findById(userId);
 
+    console.log(req.body.title);
+    console.log(req.body.pictureUrl);
+
     const {
       title,
+      description,
+      difficultyLevel,
+      servings,
+      preparationTime,
+      cookingTime,
       ingredients,
       preparationInstructions,
-      cookingTime,
-      difficultyLevel,
-      servingSize,
-      description,
-      preparationTime,
-      nutritionalInformation,
+      calories,
+      protein,
+      fat,
+      carbohydrates,
       pictureUrl,
-      tags,
     } = req.body;
 
     const newRecipe = new Recipe({
       title,
+      description,
+      difficultyLevel,
+      servingSize: servings,
+      preparationTime,
+      cookingTime,
       ingredients,
       preparationInstructions,
-      cookingTime,
-      difficultyLevel,
-      servingSize,
-      description,
-      preparationTime,
-      nutritionalInformation,
+      nutritionalInformation: {
+        calories,
+        protein,
+        fat,
+        carbohydrates,
+      },
       pictureUrl,
-      tags,
       postedBy: {
         _id: user._id,
         username: user.username,
