@@ -56,6 +56,8 @@ const RecipesWidget = ({ recipeId, isRecipe = false }) => {
     fetchData();
   }, []);
 
+  const handleOnCreateRecipe = () => {};
+
   if (user === null) {
     return (
       <div

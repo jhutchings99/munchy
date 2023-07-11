@@ -37,23 +37,41 @@ const ReplyWidget = ({
   const currentURL = location.href;
 
   return (
-    <div className="border-b-[1px] border-b-primary">
+    <div className="border-b-[1px] border-b-primary md:max-w-[70vw] md:ml-[30vw] lg:ml-[20vw] lg:max-w-[80vw]">
       <div className="flex gap-1 m-2">
-        <img
-          src={postedBy.profileImage}
-          alt={`${postedBy.username}'s profile image`}
-          className="h-12 w-12 rounded-full hover:cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/users/${postedBy._id}`, {
-              state: {
-                userId: postedBy._id,
-                previousURL: currentURL,
-                recipeId: recipeId,
-              },
-            });
-          }}
-        />
+        {postedBy.profileImage === "" && (
+          <p
+            className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${postedBy._id}`, {
+                state: {
+                  userId: postedBy._id,
+                  previousURL: currentURL,
+                },
+              });
+            }}
+          >
+            {postedBy.username[0]}
+          </p>
+        )}
+        {postedBy.profileImage !== "" && (
+          <img
+            src={postedBy.profileImage}
+            alt={`${postedBy.username}'s profile image`}
+            className="h-12 w-12 rounded-full hover:cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${postedBy._id}`, {
+                state: {
+                  userId: postedBy._id,
+                  previousURL: currentURL,
+                  recipeId: recipeId,
+                },
+              });
+            }}
+          />
+        )}
         <div>
           <div className="flex gap-1 items-center">
             <p

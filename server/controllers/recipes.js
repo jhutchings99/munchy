@@ -86,9 +86,6 @@ export const createRecipe = async (req, res) => {
     const { userId } = req.params;
     const user = await User.findById(userId);
 
-    console.log(req.body.title);
-    console.log(req.body.pictureUrl);
-
     const {
       title,
       description,
@@ -105,6 +102,18 @@ export const createRecipe = async (req, res) => {
       pictureUrl,
     } = req.body;
 
+    const parsedIngredients = [];
+    const singleIngredients = ingredients.split("\n");
+    singleIngredients.forEach((ingredient) => {
+      let parsedIngredient = {};
+      const splitIngredient = ingredient.split(" ");
+      parsedIngredient["quantity"] = splitIngredient[0];
+      parsedIngredient["name"] = splitIngredient[1];
+      parsedIngredients.push(parsedIngredient);
+    });
+
+    const parsedInstructions = preparationInstructions.split("\n");
+
     const newRecipe = new Recipe({
       title,
       description,
@@ -112,8 +121,8 @@ export const createRecipe = async (req, res) => {
       servingSize: servings,
       preparationTime,
       cookingTime,
-      ingredients,
-      preparationInstructions,
+      ingredients: parsedIngredients,
+      preparationInstructions: parsedInstructions,
       nutritionalInformation: {
         calories,
         protein,

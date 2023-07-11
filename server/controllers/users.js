@@ -192,3 +192,20 @@ export const followUnfollowUser = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+export const editProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { bio, profileImage } = req.body;
+    const user = await User.findById(userId);
+
+    user.bio = bio;
+    user.profileImage = profileImage;
+
+    await user.save();
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};

@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { BsFillCalendarDateFill, BsArrowLeft } from "react-icons/bs";
+import { BsFillCalendarDateFill, BsArrowLeft, BsXLg } from "react-icons/bs";
 import RecipeWidget from "../widgets/RecipeWidget";
 import { useSelector } from "react-redux";
 import Navbar from "../navbar";
@@ -56,6 +56,7 @@ const extractPath = (url) => {
 const UserProfilePage = () => {
   const navigate = useNavigate();
   const userInState = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const currentURL = location.href;
 
   const [user, setUser] = useState(null);
@@ -67,20 +68,113 @@ const UserProfilePage = () => {
 
   const [numFollowers, setNumFollowers] = useState(0);
   const [numFollowing, setNumFollowing] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [newProfilePicture, setNewProfilePicture] = useState(null);
+  const [newProfileBio, setNewProfileBio] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const userData = await getUser(URL, userId);
+      const userInStateData = await getUser(URL, userInState._id);
       const userRecipes = await getUserRecipes(URL, userId);
       setUser(userData);
       setUserRecipes(userRecipes);
       setIsLoggedInUser(userInState._id === userData._id);
+      setIsFollowing(userInStateData.following.includes(userId));
       setNumFollowers(userData.followers.length);
       setNumFollowing(userData.following.length);
     };
 
     fetchData();
-  }, []);
+  }, [isFollowing]);
+
+  const followUnfollowUser = async () => {
+    const response = await fetch(
+      `${URL}/users/${userInState._id}/follow/${userId}`,
+      {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (response.ok) {
+      setIsFollowing((prevIsFollowing) => !prevIsFollowing); // Use functional update to ensure the updated value is based on the previous state
+      // Refetch user data
+      const userData = await getUser(URL, userId);
+      const userRecipes = await getUserRecipes(URL, userId);
+      setUser(userData);
+      setUserRecipes(userRecipes);
+      setNumFollowers(userData.followers.length);
+      setNumFollowing(userData.following.length);
+    }
+  };
+
+  const validateForm = (e) => {
+    e.preventDefault();
+
+    // Check if all required fields are filled out
+    if (newProfilePicture === null || newProfileBio === "") {
+      // Display an error message or highlight the required fields
+      alert("Please fill out all the required fields");
+      return;
+    }
+
+    // If all required fields are filled out, proceed with form submission
+    uploadPicture();
+  };
+
+  const uploadPicture = async () => {
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", newProfilePicture);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUD_PRESET);
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUD_NAME
+        }/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+
+      setIsUploading(false);
+      if (!isUploading) {
+        await editProfile(result.url);
+        setIsEditingProfile(false);
+      }
+    } catch (error) {
+      console.error("Error uploading picture:", error);
+      setIsUploading(false);
+    }
+  };
+
+  const editProfile = async (profileImage) => {
+    const response = await fetch(`${URL}/users/${userInState._id}/profile`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        bio: newProfileBio,
+        profileImage: profileImage,
+      }),
+    });
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setNewProfilePicture(file);
+  };
 
   if (user === null) {
     return (
@@ -128,19 +222,46 @@ const UserProfilePage = () => {
         />
       </div>
       <div className="flex justify-between items-center m-2">
-        <img
-          src={user.profileImage}
-          alt={`${user.username}'s profile image`}
-          className="h-20 w-20"
-        />
+        {user.profileImage === "" && (
+          <p
+            className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${user._id}`, {
+                state: { userId: user._id, previousURL: currentURL },
+              });
+            }}
+          >
+            {user.username[0]}
+          </p>
+        )}
+        {user.profileImage !== "" && (
+          <img
+            src={user.profileImage}
+            alt={`${user.username}'s profile image`}
+            className="h-20 w-20"
+          />
+        )}
         {isLoggedInUser && (
-          <button className="bg-primary text-white rounded-md px-4 py-2 text-sm">
+          <button
+            className="bg-primary text-white rounded-md px-4 py-2 text-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditingProfile(true);
+            }}
+          >
             Edit Profile
           </button>
         )}
         {!isLoggedInUser && (
-          <button className="bg-primary text-white rounded-md px-4 py-2 text-sm">
-            Follow
+          <button
+            className="bg-primary text-white rounded-md px-4 py-2 text-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              followUnfollowUser();
+            }}
+          >
+            {isFollowing ? "Unfollow" : "Follow"}
           </button>
         )}
       </div>
@@ -203,6 +324,60 @@ const UserProfilePage = () => {
           )
         )}
       </div>
+      {isEditingProfile && (
+        <div>
+          <div
+            className="h-full w-full bg-gray-100 fixed top-0 left-0 opacity-40"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditingProfile(false);
+            }}
+          ></div>
+          <div className="w-[90vw] h-[90vh] overflow-x-hidden overflow-y-auto overscroll-contain fixed top-[5vh] left-[5vw] bg-background z-1 shadow-lg rounded-md">
+            <BsXLg
+              className="text-2xl bg-background hover:bg-gray-100 rounded-full m-4 hover:cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditingProfile(false);
+              }}
+            />
+            <form onSubmit={validateForm}>
+              <div className="ml-4 mr-4 my-2">
+                <p className="text-sm font-medium">Bio</p>
+                <textarea
+                  type="text"
+                  className="rounded-md w-full p-1 text-sm h-24"
+                  placeholder="Bio..."
+                  onChange={(e) => {
+                    setNewProfileBio(e.target.value);
+                  }}
+                  required
+                />
+              </div>
+              <div className="ml-4 mr-4 my-2">
+                <label className="text-sm font-medium" htmlFor="file_input">
+                  Picture
+                </label>
+                <input
+                  className="block w-full text-sm border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:border-none file:text-black file:bg-gray-200"
+                  id="file_input"
+                  type="file"
+                  onChange={handleFileChange}
+                  required
+                />
+              </div>
+              <div className="ml-4 mr-4 my-4 flex justify-center items-center">
+                <button
+                  className=" bg-primary text-white w-full rounded-md"
+                  type="submit"
+                >
+                  Save Profile
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import {
   createReplyReply,
   followUnfollowUser,
   getUserBookmarks,
+  editProfile,
 } from "../controllers/users.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -32,5 +33,6 @@ router.patch(
   addRemoveReplyLike
 );
 router.patch("/:userId/follow/:otherUserId", followUnfollowUser);
+router.patch("/:userId/profile", editProfile);
 
 export default router;

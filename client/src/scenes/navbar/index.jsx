@@ -7,9 +7,10 @@ import {
   BsXLg,
 } from "react-icons/bs";
 import Logo from "../../assets/munchy-logo.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { setRecipes } from "../../state";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -33,7 +34,6 @@ const Navbar = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    console.log(file);
     setSelectedFile(file);
   };
 
@@ -42,6 +42,16 @@ const Navbar = () => {
   const navigate = useNavigate();
   const currentURL = location.href;
   const splitURL = currentURL.split("/");
+  const dispatch = useDispatch();
+
+  const getRecipes = async () => {
+    const response = await fetch(`${URL}/recipes`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await response.json();
+    dispatch(setRecipes({ recipes: data.reverse() }));
+  };
 
   let recipeId;
   if (splitURL[3] === "recipes") {
@@ -50,7 +60,6 @@ const Navbar = () => {
 
   const uploadPicture = async () => {
     setIsUploading(true);
-    console.log(isUploading);
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -68,18 +77,16 @@ const Navbar = () => {
       );
 
       const result = await response.json();
-      console.log(result);
 
       setIsUploading(false);
-      console.log(isUploading);
       if (!isUploading) {
-        console.log(result.url);
         await createRecipe(result.url);
+        await getRecipes();
+        setIsMunching(false);
       }
     } catch (error) {
       console.error("Error uploading picture:", error);
       setIsUploading(false);
-      console.log(isUploading);
     }
   };
 
@@ -93,23 +100,47 @@ const Navbar = () => {
       body: JSON.stringify({
         title: newRecipeTitle,
         description: newRecipeDescription,
-        difficultyLevel: newRecipeDiffi,
-        servingSize: servings,
-        preparationTime,
-        cookingTime,
-        ingredients,
-        preparationInstructions,
-        calories,
-        protein,
-        fat,
-        carbohydrates,
+        difficultyLevel: newRecipeDifficultyLevel,
+        servingSize: newRecipeServings,
+        preparationTime: newRecipePrepTime,
+        cookingTime: newRecipeCookTime,
+        ingredients: newRecipeIngredients,
+        preparationInstructions: newRecipeSteps,
+        calories: newRecipeCalories,
+        protein: newRecipeProtein,
+        fat: newRecipeFat,
+        carbohydrates: newRecipeCarbs,
         pictureUrl: recipePicture,
       }),
     });
+  };
 
-    if (response.ok) {
-      console.log("good!");
+  const validateForm = (e) => {
+    e.preventDefault();
+
+    // Check if all required fields are filled out
+    if (
+      newRecipeTitle === "" ||
+      newRecipeDescription === "" ||
+      newRecipeDifficultyLevel === "" ||
+      newRecipeServings === "" ||
+      newRecipePrepTime === "" ||
+      newRecipeCookTime === "" ||
+      newRecipeIngredients === "" ||
+      newRecipeSteps === "" ||
+      newRecipeCalories === "" ||
+      newRecipeProtein === "" ||
+      newRecipeFat === "" ||
+      newRecipeCarbs === "" ||
+      selectedFile === null
+    ) {
+      // Display an error message or highlight the required fields
+      alert("Please fill out all the required fields");
+      return;
     }
+
+    // If all required fields are filled out, proceed with form submission
+    uploadPicture();
   };
 
   return (
@@ -222,7 +253,7 @@ const Navbar = () => {
                 setIsMunching(false);
               }}
             />
-            <div>
+            <form onSubmit={validateForm}>
               <div className="ml-4 mr-4 my-2">
                 <p className="text-sm font-medium">Title</p>
                 <input
@@ -232,6 +263,7 @@ const Navbar = () => {
                   onChange={(e) => {
                     setNewRecipeTitle(e.target.value);
                   }}
+                  required
                 />
               </div>
               <div className="ml-4 mr-4 my-2">
@@ -243,30 +275,36 @@ const Navbar = () => {
                   onChange={(e) => {
                     setNewRecipeDescription(e.target.value);
                   }}
+                  required
                 />
               </div>
               <div className="ml-4 mr-4 my-2 flex items-center w-full">
                 <div className="w-full">
                   <p className="text-sm font-medium">Difficulty Level</p>
                   <input
-                    type="text"
+                    type="number"
+                    max={10}
+                    min={1}
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Difficuly Level..."
                     onChange={(e) => {
                       setNewRecipeDifficultyLevel(e.target.value);
                     }}
+                    required
                   />
                 </div>
 
                 <div className="w-full">
                   <p className="text-sm font-medium">Servings</p>
                   <input
-                    type="text"
+                    type="number"
+                    min={1}
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Servings..."
                     onChange={(e) => {
                       setNewRecipeServings(e.target.value);
                     }}
+                    required
                   />
                 </div>
               </div>
@@ -274,23 +312,27 @@ const Navbar = () => {
                 <div className="w-full">
                   <p className="text-sm font-medium">Preparation Time</p>
                   <input
-                    type="text"
+                    type="number"
+                    min={1}
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Preparation time..."
                     onChange={(e) => {
                       setNewRecipePrepTime(e.target.value);
                     }}
+                    required
                   />
                 </div>
                 <div className="w-full">
                   <p className="text-sm font-medium">Cooking Time</p>
                   <input
-                    type="text"
+                    type="number"
+                    min={1}
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Cooking time..."
                     onChange={(e) => {
                       setNewRecipeCookTime(e.target.value);
                     }}
+                    required
                   />
                 </div>
               </div>
@@ -303,6 +345,7 @@ const Navbar = () => {
                   onChange={(e) => {
                     setNewRecipeIngredients(e.target.value);
                   }}
+                  required
                 />
               </div>
               <div className="ml-4 mr-4 my-2">
@@ -312,32 +355,35 @@ const Navbar = () => {
                   className="rounded-md w-full p-1 text-sm"
                   placeholder="Steps, one per line..."
                   onChange={(e) => {
-                    setNewRecipePrepTime(e.target.value);
+                    setnewRecipeSteps(e.target.value);
                   }}
+                  required
                 />
               </div>
               <div className="ml-4 mr-4 my-2 flex items-center w-full">
                 <div className="w-full">
                   <p className="text-sm font-medium">Calories</p>
                   <input
-                    type="text"
+                    type="number"
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Calories..."
                     onChange={(e) => {
                       setnewRecipeCalories(e.target.value);
                     }}
+                    required
                   />
                 </div>
 
                 <div className="w-full">
                   <p className="text-sm font-medium">Protein</p>
                   <input
-                    type="text"
+                    type="number"
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Protein..."
                     onChange={(e) => {
                       setnewRecipeProtein(e.target.value);
                     }}
+                    required
                   />
                 </div>
               </div>
@@ -345,30 +391,29 @@ const Navbar = () => {
                 <div className="w-full">
                   <p className="text-sm font-medium">Fat</p>
                   <input
-                    type="text"
+                    type="number"
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Fat..."
                     onChange={(e) => {
                       setnewRecipeFat(e.target.value);
                     }}
+                    required
                   />
                 </div>
                 <div className="w-full">
                   <p className="text-sm font-medium">Carbohydrates</p>
                   <input
-                    type="text"
+                    type="number"
                     className="rounded-md w-[7rem] p-1 text-sm"
                     placeholder="Carbohydrates..."
                     onChange={(e) => {
                       setnewRecipeCarbs(e.target.value);
                     }}
+                    required
                   />
                 </div>
               </div>
               <div className="ml-4 mr-4 my-2">
-                {/* <p className="text-sm font-medium">Picture</p>
-                <input type="file" className="rounded-md w-full" /> */}
-
                 <label className="text-sm font-medium" htmlFor="file_input">
                   Picture
                 </label>
@@ -377,28 +422,18 @@ const Navbar = () => {
                   id="file_input"
                   type="file"
                   onChange={handleFileChange}
+                  required
                 />
               </div>
-              {/* <div className="ml-4 mr-4 my-2">
-                <p className="text-sm font-medium">Tags</p>
-                <input
-                  type="text"
-                  className="rounded-md w-full p-1 text-sm"
-                  placeholder="Tags..."
-                />
-              </div> */}
               <div className="ml-4 mr-4 my-4 flex justify-center items-center">
                 <button
                   className=" bg-primary text-white w-full rounded-md"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    uploadPicture();
-                  }}
+                  type="submit"
                 >
                   Munch
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

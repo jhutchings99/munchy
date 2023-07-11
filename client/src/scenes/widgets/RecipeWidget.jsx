@@ -52,17 +52,33 @@ const RecipeWidget = ({
       }}
     >
       <div className="flex gap-1">
-        <img
-          src={postedBy.profileImage}
-          alt={`${postedBy.username}'s profile image`}
-          className="h-12 w-12 rounded-full hover:cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/users/${postedBy._id}`, {
-              state: { userId: postedBy._id, previousURL: currentURL },
-            });
-          }}
-        />
+        {postedBy.profileImage === "" && (
+          <p
+            className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${postedBy._id}`, {
+                state: { userId: postedBy._id, previousURL: currentURL },
+              });
+            }}
+          >
+            {postedBy.username[0]}
+          </p>
+        )}
+        {postedBy.profileImage !== "" && (
+          <img
+            src={postedBy.profileImage}
+            alt={`${postedBy.username}'s profile image`}
+            className="h-12 w-12 rounded-full hover:cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/users/${postedBy._id}`, {
+                state: { userId: postedBy._id, previousURL: currentURL },
+              });
+            }}
+          />
+        )}
+
         <div>
           <div className="flex gap-1 items-center">
             <p

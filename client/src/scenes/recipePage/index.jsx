@@ -102,7 +102,7 @@ const RecipePage = () => {
   return (
     <div className="mb-24">
       <Navbar />
-      <div className="border-b-[1px] border-primary w-full p-2 bg-white">
+      <div className="border-b-[1px] border-primary w-full p-2 bg-white md:max-w-[70vw] md:ml-[30vw] lg:ml-[20vw] lg:max-w-[80vw]">
         <div className="m-2">
           <BsArrowLeft
             className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100"
@@ -113,21 +113,39 @@ const RecipePage = () => {
           />
         </div>
         <div className="flex gap-1">
-          <img
-            src={recipe.postedBy.profileImage}
-            alt={`${recipe.postedBy.username}'s profile image`}
-            className="h-12 w-12 rounded-full hover:cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/users/${recipe.postedBy._id}`, {
-                state: {
-                  userId: recipe.postedBy._id,
-                  previousURL: currentURL,
-                  recipeId: recipe._id,
-                },
-              });
-            }}
-          />
+          {recipe.postedBy.profileImage === "" && (
+            <p
+              className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/users/${recipe.postedBy._id}`, {
+                  state: {
+                    userId: recipe.postedBy._id,
+                    previousURL: currentURL,
+                  },
+                });
+              }}
+            >
+              {recipe.postedBy.username[0]}
+            </p>
+          )}
+          {recipe.postedBy.profileImage !== "" && (
+            <img
+              src={recipe.postedBy.profileImage}
+              alt={`${recipe.postedBy.username}'s profile image`}
+              className="h-12 w-12 rounded-full hover:cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/users/${recipe.postedBy._id}`, {
+                  state: {
+                    userId: recipe.postedBy._id,
+                    previousURL: currentURL,
+                    recipeId: recipe._id,
+                  },
+                });
+              }}
+            />
+          )}
           <div>
             <div className="flex gap-1 items-center">
               <p
@@ -168,7 +186,7 @@ const RecipePage = () => {
             <img
               src={recipe.pictureUrl}
               alt={`Picture of ${recipe.title}`}
-              className="aspect-w-16 aspect-h-9"
+              className="aspect-w-16 aspect-h-9 max-w-[80vw] sm:max-w-[60vw] md:max-w-[50vw] lg:max-w-[40vw]"
             />
           </div>
         </div>
