@@ -73,6 +73,7 @@ const UserProfilePage = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [newProfilePicture, setNewProfilePicture] = useState(null);
   const [newProfileBio, setNewProfileBio] = useState("");
+  const [newProfileUsername, setNewProfileUsername] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -116,7 +117,11 @@ const UserProfilePage = () => {
     e.preventDefault();
 
     // Check if all required fields are filled out
-    if (newProfilePicture === null || newProfileBio === "") {
+    if (
+      newProfilePicture === null ||
+      newProfileBio === "" ||
+      newProfileUsername === ""
+    ) {
       // Display an error message or highlight the required fields
       alert("Please fill out all the required fields");
       return;
@@ -150,6 +155,7 @@ const UserProfilePage = () => {
       if (!isUploading) {
         await editProfile(result.url);
         setIsEditingProfile(false);
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error uploading picture:", error);
@@ -165,6 +171,7 @@ const UserProfilePage = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        username: newProfileUsername,
         bio: newProfileBio,
         profileImage: profileImage,
       }),
@@ -239,7 +246,7 @@ const UserProfilePage = () => {
           <img
             src={user.profileImage}
             alt={`${user.username}'s profile image`}
-            className="h-20 w-20"
+            className="h-20 w-20 rounded-full"
           />
         )}
         {isLoggedInUser && (
@@ -342,6 +349,18 @@ const UserProfilePage = () => {
               }}
             />
             <form onSubmit={validateForm}>
+              <div className="ml-4 mr-4 my-2">
+                <p className="text-sm font-medium">Username</p>
+                <input
+                  type="text"
+                  className="rounded-md w-full p-1 text-sm"
+                  placeholder="Username..."
+                  onChange={(e) => {
+                    setNewProfileUsername(e.target.value);
+                  }}
+                  required
+                />
+              </div>
               <div className="ml-4 mr-4 my-2">
                 <p className="text-sm font-medium">Bio</p>
                 <textarea

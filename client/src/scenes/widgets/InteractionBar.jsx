@@ -13,6 +13,14 @@ import { useNavigate } from "react-router-dom";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
+const getUser = async (URL, userId) => {
+  const response = await fetch(`${URL}/users/${userId}`, {
+    method: "GET",
+  });
+  const data = await response.json();
+  return data;
+};
+
 const copyUrlToClip = () => {
   const url = location.href;
   navigator.clipboard.writeText(url);
@@ -24,7 +32,7 @@ const InteractionBar = ({
   onNewReply = null,
   onBookmarkChange = null,
 }) => {
-  const currentUser = useSelector((state) => state.user);
+  const userInState = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const navigate = useNavigate();
   const currentURL = location.href;
@@ -46,6 +54,10 @@ const InteractionBar = ({
   const [isReplying, setIsReplying] = useState(false);
 
   const [replyText, setReplyText] = useState("");
+
+  const [recipeUser, setRecipeUser] = useState(null);
+  const [replyUser, setReplyUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const handleMessageChange = (event) => {
     setReplyText(event.target.value);
@@ -97,7 +109,6 @@ const InteractionBar = ({
       setFavoritesCount(isFavorited ? favoritesCount - 1 : favoritesCount + 1);
       if (onBookmarkChange) {
         onBookmarkChange();
-        console.log("bookmark change");
       }
     }
   };
@@ -149,17 +160,17 @@ const InteractionBar = ({
 
   const isPostLiked = async () => {
     const recipe = await getRecipe();
-    return recipe.likes.includes(currentUser._id);
+    return recipe.likes.includes(userInState._id);
   };
 
   const isReplyLiked = async () => {
     const reply = await getReply();
-    return reply.likes.includes(currentUser._id);
+    return reply.likes.includes(userInState._id);
   };
 
   const isPostFavorited = async () => {
     const recipe = await getRecipe();
-    return recipe.usersFavorited.includes(currentUser._id);
+    return recipe.usersFavorited.includes(userInState._id);
   };
 
   useEffect(() => {
@@ -177,6 +188,12 @@ const InteractionBar = ({
       setRepliesCount(recipe.replies.length);
 
       setRecipe(recipe);
+
+      const recipeUser = await getUser(URL, recipe.postedBy._id);
+      setRecipeUser(recipeUser);
+
+      const currentUser = await getUser(URL, userInState._id);
+      setCurrentUser(currentUser);
     };
 
     const fetchReplyData = async () => {
@@ -187,6 +204,12 @@ const InteractionBar = ({
       setReplyLikesCount(reply.likes.length);
 
       setReply(reply);
+
+      const replyUser = await getUser(URL, reply.postedBy._id);
+      setReplyUser(replyUser);
+
+      const currentUser = await getUser(URL, userInState._id);
+      setCurrentUser(currentUser);
     };
 
     if (recipeId) {
@@ -197,6 +220,10 @@ const InteractionBar = ({
       fetchReplyData();
     }
   }, []);
+
+  if (currentUser === null) {
+    return <></>;
+  }
 
   return (
     <div className="flex items-center justify-around mt-6 mb-2">
@@ -254,21 +281,23 @@ const InteractionBar = ({
               <div className="w-full h-full">
                 <p className="text-sm">
                   Replying to{" "}
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/users/${recipe.postedBy._id}`, {
-                        state: {
-                          userId: recipe.postedBy._id,
-                          previousURL: currentURL,
-                          recipeId: recipe._id,
-                        },
-                      });
-                    }}
-                    className="hover:cursor-pointer text-blue-500"
-                  >
-                    @{recipe.postedBy.username}
-                  </span>
+                  {!reply && (
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/users/${recipe.postedBy._id}`, {
+                          state: {
+                            userId: recipe.postedBy._id,
+                            previousURL: currentURL,
+                            recipeId: recipe._id,
+                          },
+                        });
+                      }}
+                      className="hover:cursor-pointer text-blue-500"
+                    >
+                      @{recipeUser.username}
+                    </span>
+                  )}
                 </p>
                 <textarea
                   name="replyText"
@@ -283,19 +312,22 @@ const InteractionBar = ({
           </div>
         </div>
       )}
-      <div
-        className="flex items-center gap-1 hover:cursor-pointer select-none"
-        data-te-toggle="tooltip"
-        title="Reply"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsReplying(true);
-          setReplyText("");
-        }}
-      >
-        <BsChat />
-        <p>{repliesCount}</p>
-      </div>
+      {!reply && (
+        <div
+          className="flex items-center gap-1 hover:cursor-pointer select-none"
+          data-te-toggle="tooltip"
+          title="Reply"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsReplying(true);
+            setReplyText("");
+          }}
+        >
+          <BsChat />
+          <p>{repliesCount}</p>
+        </div>
+      )}
+
       {recipeId && (
         <div
           className="flex items-center gap-1 hover:cursor-pointer select-none"

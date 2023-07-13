@@ -4,7 +4,11 @@ const ReplySchema = new mongoose.Schema(
   {
     postedBy: {
       type: Object,
-      default: {},
+      default: {
+        _id: "",
+        username: "",
+        profileImage: "",
+      },
     },
     content: String,
     likes: {

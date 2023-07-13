@@ -196,16 +196,100 @@ export const followUnfollowUser = async (req, res) => {
 export const editProfile = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { bio, profileImage } = req.body;
-    const user = await User.findById(userId);
+    const { username, bio, profileImage } = req.body;
 
-    user.bio = bio;
-    user.profileImage = profileImage;
+    // Update user document
+    await User.findByIdAndUpdate(userId, {
+      $set: { username, bio, profileImage },
+    });
 
-    await user.save();
+    // Update recipes
+    await Recipe.updateMany(
+      { "postedBy._id": userId },
+      {
+        $set: {
+          "postedBy.username": username,
+          "postedBy.profileImage": profileImage,
+        },
+      }
+    );
 
-    res.status(200).json(user);
+    // Update replies
+    await Reply.updateMany(
+      { "postedBy._id": userId },
+      {
+        $set: {
+          "postedBy.username": username,
+          "postedBy.profileImage": profileImage,
+        },
+      }
+    );
+
+    // Fetch updated user
+    const updatedUser = await User.findById(userId);
+
+    res.status(200).json(updatedUser);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
 };
+
+// export const editProfile = async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     const { username, bio, profileImage } = req.body;
+//     const user = await User.findById(userId);
+//     const recipes = await Recipe.find();
+//     const replies = await Reply.find();
+//     // console.log(recipes);
+//     // console.log(replies);
+
+//     user.username = username;
+//     user.bio = bio;
+//     user.profileImage = profileImage;
+
+//     const recipeUpdates = [];
+//     const replyUpdates = [];
+
+//     for (const recipe of recipes) {
+//       console.log("single recipe", recipe);
+//       // console.log(`recipe id: ${recipe.postedBy._id}`);
+//       // console.log(`userId id: ${userId}`);
+//       if (recipe.postedBy._id == userId) {
+//         // console.log("recipe match");
+//         console.log(`before username ${recipe.postedBy.username}`);
+//         recipe.postedBy.username = username;
+//         console.log(`after username ${recipe.postedBy.username}`);
+
+//         console.log(`before recipe ${recipe.postedBy.profileImage}`);
+//         recipe.postedBy.profileImage = profileImage;
+//         console.log(`after recipe ${recipe.postedBy.profileImage}`);
+//         // console.log(recipe.save());
+
+//         recipeUpdates.push(await recipe.save());
+//       }
+//     }
+
+//     for (const reply of replies) {
+//       // console.log(`reply id: ${reply.postedBy._id}`);
+//       // console.log(`userId id: ${userId}`);
+//       if (reply.postedBy._id == userId) {
+//         // console.log("reply match");
+//         reply.postedBy.username = username;
+//         reply.postedBy.profileImage = profileImage;
+//         // console.log(reply.save());
+//         replyUpdates.push(await reply.save());
+//       }
+//     }
+
+//     // await recipes.save();
+//     // await replies.save();
+//     await Promise.all([...recipeUpdates, ...replyUpdates]);
+
+//     await user.save();
+
+//     res.status(200).json(user);
+//   } catch (err) {
+//     res.status(404).json({ message: err.message });
+//   }
+// };

@@ -29,7 +29,11 @@ const RecipeSchema = new mongoose.Schema(
     tags: [String],
     postedBy: {
       type: Object,
-      default: {},
+      default: {
+        _id: "",
+        username: "",
+        profileImage: "",
+      },
     },
     likes: {
       type: Array,

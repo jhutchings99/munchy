@@ -7,6 +7,14 @@ import ReplyWidget from "../widgets/ReplyWidget";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
+const getUser = async (URL, userId) => {
+  const response = await fetch(`${URL}/users/${userId}`, {
+    method: "GET",
+  });
+  const data = await response.json();
+  return data;
+};
+
 const getRecipe = async (URL, recipeId) => {
   const response = await fetch(`${URL}/recipes/${recipeId}`, {
     method: "GET",
@@ -54,6 +62,7 @@ const RecipePage = () => {
 
   const [recipe, setRecipe] = useState(null);
   const [replies, setReplies] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +71,9 @@ const RecipePage = () => {
 
       const recipeReplies = await getRecipeReplies(URL, recipeId);
       setReplies(recipeReplies);
+
+      const user = await getUser(URL, recipeData.postedBy._id);
+      setUser(user);
     };
 
     fetchData();
@@ -72,7 +84,7 @@ const RecipePage = () => {
     setReplies(updatedReplies);
   };
 
-  if (recipe === null || replies === null) {
+  if (recipe === null || replies === null || user === null) {
     return (
       <div
         role="status"
@@ -113,32 +125,32 @@ const RecipePage = () => {
           />
         </div>
         <div className="flex gap-1">
-          {recipe.postedBy.profileImage === "" && (
+          {user.profileImage === "" && (
             <p
               className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/users/${recipe.postedBy._id}`, {
+                navigate(`/users/${user._id}`, {
                   state: {
-                    userId: recipe.postedBy._id,
+                    userId: user._id,
                     previousURL: currentURL,
                   },
                 });
               }}
             >
-              {recipe.postedBy.username[0]}
+              {user.username[0]}
             </p>
           )}
-          {recipe.postedBy.profileImage !== "" && (
+          {user.profileImage !== "" && (
             <img
-              src={recipe.postedBy.profileImage}
-              alt={`${recipe.postedBy.username}'s profile image`}
+              src={user.profileImage}
+              alt={`${user.username}'s profile image`}
               className="h-12 w-12 rounded-full hover:cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/users/${recipe.postedBy._id}`, {
+                navigate(`/users/${user._id}`, {
                   state: {
-                    userId: recipe.postedBy._id,
+                    userId: user._id,
                     previousURL: currentURL,
                     recipeId: recipe._id,
                   },
@@ -152,31 +164,31 @@ const RecipePage = () => {
                 className="hover:cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/users/${recipe.postedBy._id}`, {
+                  navigate(`/users/${user._id}`, {
                     state: {
-                      userId: recipe.postedBy._id,
+                      userId: user._id,
                       previousURL: currentURL,
                       recipeId: recipe._id,
                     },
                   });
                 }}
               >
-                {recipe.postedBy.username}
+                {user.username}
               </p>
               <p
                 className="hover:underline hover:cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/users/${recipe.postedBy._id}`, {
+                  navigate(`/users/${user._id}`, {
                     state: {
-                      userId: recipe.postedBy._id,
+                      userId: user._id,
                       previousURL: currentURL,
                       recipeId: recipe._id,
                     },
                   });
                 }}
               >
-                @{recipe.postedBy.username}
+                @{user.username}
               </p>
               <BsDot />
               <p>{formatDate(recipe.createdAt)}</p>
@@ -186,7 +198,7 @@ const RecipePage = () => {
             <img
               src={recipe.pictureUrl}
               alt={`Picture of ${recipe.title}`}
-              className="aspect-w-16 aspect-h-9 max-w-[80vw] sm:max-w-[60vw] md:max-w-[50vw] lg:max-w-[40vw]"
+              className="aspect-w-16 aspect-h-9 max-w-[70vw] sm:max-w-[60vw] md:max-w-[50vw] lg:max-w-[40vw]"
             />
           </div>
         </div>
