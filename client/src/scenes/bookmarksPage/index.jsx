@@ -3,6 +3,7 @@ import Navbar from "../navbar";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import RecipeWidget from "../widgets/RecipeWidget";
+import FeaturedRecipeWidget from "../widgets/FeaturedRecipeWidget";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -69,27 +70,34 @@ const BookmarksPage = () => {
   }
 
   return (
-    <div className="mb-24">
-      <div className="flex items-center justify-center gap-2">
-        <img src={Logo} alt="Munchy Logo" className="h-10 w-10 items-center" />
-        <p className="font-medium text-large">Munchy</p>
+    <div>
+      <div className="mb-24  ml-[30vw] w-[40vw]">
+        <div className="flex items-center justify-center gap-2">
+          <img
+            src={Logo}
+            alt="Munchy Logo"
+            className="h-10 w-10 items-center"
+          />
+          <p className="font-medium text-large">Munchy</p>
+        </div>
+        <div>
+          {bookmarks.map(
+            ({ _id, title, description, pictureUrl, postedBy, createdAt }) => (
+              <RecipeWidget
+                key={_id}
+                recipeId={_id}
+                title={title}
+                pictureUrl={pictureUrl}
+                postedBy={postedBy}
+                createdAt={createdAt}
+                description={description}
+                onBookmarkChange={handleBookmarkChange}
+              />
+            )
+          )}
+        </div>
       </div>
-      <div>
-        {bookmarks.map(
-          ({ _id, title, description, pictureUrl, postedBy, createdAt }) => (
-            <RecipeWidget
-              key={_id}
-              recipeId={_id}
-              title={title}
-              pictureUrl={pictureUrl}
-              postedBy={postedBy}
-              createdAt={createdAt}
-              description={description}
-              onBookmarkChange={handleBookmarkChange}
-            />
-          )
-        )}
-      </div>
+      <FeaturedRecipeWidget />
       <Navbar />
     </div>
   );

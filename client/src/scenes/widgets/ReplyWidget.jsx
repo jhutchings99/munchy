@@ -82,7 +82,7 @@ const ReplyWidget = ({
   }
 
   return (
-    <div className="border-b-[1px] border-b-primary md:max-w-[70vw] md:ml-[30vw] lg:ml-[20vw] lg:max-w-[80vw]">
+    <div className="border-b-[1px] border-b-primary md:max-w-[70vw] md:ml-[30vw] lg:ml-[30vw] lg:max-w-[70vw]">
       <div className="flex gap-1 m-2">
         {user.profileImage === "" && (
           <p

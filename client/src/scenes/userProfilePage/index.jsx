@@ -213,190 +213,192 @@ const UserProfilePage = () => {
   return (
     <div>
       <Navbar />
-      <div className="m-2">
-        <BsArrowLeft
-          className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(extractPath(previousURL), {
-              state: {
-                userId: userId,
-                previousURL: currentURL,
-                recipeId: recipeId,
-              },
-            });
-          }}
-        />
-      </div>
-      <div className="flex justify-between items-center m-2">
-        {user.profileImage === "" && (
-          <p
-            className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
+      <div className="md:ml-[30vw] lg:ml-[30vw]">
+        <div className="m-2">
+          <BsArrowLeft
+            className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/users/${user._id}`, {
-                state: { userId: user._id, previousURL: currentURL },
+              navigate(extractPath(previousURL), {
+                state: {
+                  userId: userId,
+                  previousURL: currentURL,
+                  recipeId: recipeId,
+                },
+              });
+            }}
+          />
+        </div>
+        <div className="flex justify-between items-center m-2">
+          {user.profileImage === "" && (
+            <p
+              className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/users/${user._id}`, {
+                  state: { userId: user._id, previousURL: currentURL },
+                });
+              }}
+            >
+              {user.username[0]}
+            </p>
+          )}
+          {user.profileImage !== "" && (
+            <img
+              src={user.profileImage}
+              alt={`${user.username}'s profile image`}
+              className="h-20 w-20 rounded-full"
+            />
+          )}
+          {isLoggedInUser && (
+            <button
+              className="bg-primary text-white rounded-md px-4 py-2 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditingProfile(true);
+              }}
+            >
+              Edit Profile
+            </button>
+          )}
+          {!isLoggedInUser && (
+            <button
+              className="bg-primary text-white rounded-md px-4 py-2 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                followUnfollowUser();
+              }}
+            >
+              {isFollowing ? "Unfollow" : "Follow"}
+            </button>
+          )}
+        </div>
+        <div className="my-4 m-2">
+          <p className="font-medium text-xl">{user.username}</p>
+          <p className="font-thin">@{user.username}</p>
+        </div>
+        <p className="text-sm m-2">{user.bio}</p>
+        <div className="flex items-center gap-2 my-5 m-2">
+          <BsFillCalendarDateFill />
+          <p className="text-sm font-thin">
+            Joined on {formatDate(user.createdAt)}
+          </p>
+        </div>
+        <div className="flex items-center justify-center gap-4 mb-2">
+          <div
+            className="flex gap-1 hover:underline hover:cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate("/users", {
+                state: {
+                  previousURL: currentURL,
+                  followers: false,
+                },
               });
             }}
           >
-            {user.username[0]}
-          </p>
-        )}
-        {user.profileImage !== "" && (
-          <img
-            src={user.profileImage}
-            alt={`${user.username}'s profile image`}
-            className="h-20 w-20 rounded-full"
-          />
-        )}
-        {isLoggedInUser && (
-          <button
-            className="bg-primary text-white rounded-md px-4 py-2 text-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditingProfile(true);
-            }}
-          >
-            Edit Profile
-          </button>
-        )}
-        {!isLoggedInUser && (
-          <button
-            className="bg-primary text-white rounded-md px-4 py-2 text-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              followUnfollowUser();
-            }}
-          >
-            {isFollowing ? "Unfollow" : "Follow"}
-          </button>
-        )}
-      </div>
-      <div className="my-4 m-2">
-        <p className="font-medium text-xl">{user.username}</p>
-        <p className="font-thin">@{user.username}</p>
-      </div>
-      <p className="text-sm m-2">{user.bio}</p>
-      <div className="flex items-center gap-2 my-5 m-2">
-        <BsFillCalendarDateFill />
-        <p className="text-sm font-thin">
-          Joined on {formatDate(user.createdAt)}
-        </p>
-      </div>
-      <div className="flex items-center justify-center gap-4 mb-2">
-        <div
-          className="flex gap-1 hover:underline hover:cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate("/users", {
-              state: {
-                previousURL: currentURL,
-                followers: false,
-              },
-            });
-          }}
-        >
-          <p>{numFollowing}</p>
-          <p className="font-thin">Following</p>
-        </div>
-        <div
-          className="flex gap-1 hover:underline hover:cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate("/users", {
-              state: {
-                previousURL: currentURL,
-                followers: true,
-              },
-            });
-          }}
-        >
-          <p>{numFollowers}</p>
-          <p className="font-thin">Followers</p>
-        </div>
-      </div>
-      <div className="border-b-[1px] border-b-primary w-full"></div>
-      <div>
-        {userRecipes.map(
-          ({ _id, title, description, pictureUrl, postedBy, createdAt }) => (
-            <RecipeWidget
-              key={_id}
-              recipeId={_id}
-              title={title}
-              pictureUrl={pictureUrl}
-              postedBy={postedBy}
-              createdAt={createdAt}
-              description={description}
-            />
-          )
-        )}
-      </div>
-      {isEditingProfile && (
-        <div>
+            <p>{numFollowing}</p>
+            <p className="font-thin">Following</p>
+          </div>
           <div
-            className="h-full w-full bg-gray-100 fixed top-0 left-0 opacity-40"
+            className="flex gap-1 hover:underline hover:cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
-              setIsEditingProfile(false);
+              navigate("/users", {
+                state: {
+                  previousURL: currentURL,
+                  followers: true,
+                },
+              });
             }}
-          ></div>
-          <div className="w-[90vw] h-[90vh] overflow-x-hidden overflow-y-auto overscroll-contain fixed top-[5vh] left-[5vw] bg-background z-1 shadow-lg rounded-md">
-            <BsXLg
-              className="text-2xl bg-background hover:bg-gray-100 rounded-full m-4 hover:cursor-pointer"
+          >
+            <p>{numFollowers}</p>
+            <p className="font-thin">Followers</p>
+          </div>
+        </div>
+        <div className="border-b-[1px] border-b-primary w-full"></div>
+        <div>
+          {userRecipes.map(
+            ({ _id, title, description, pictureUrl, postedBy, createdAt }) => (
+              <RecipeWidget
+                key={_id}
+                recipeId={_id}
+                title={title}
+                pictureUrl={pictureUrl}
+                postedBy={postedBy}
+                createdAt={createdAt}
+                description={description}
+              />
+            )
+          )}
+        </div>
+        {isEditingProfile && (
+          <div>
+            <div
+              className="h-full w-full bg-gray-100 fixed top-0 left-0 opacity-40"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditingProfile(false);
               }}
-            />
-            <form onSubmit={validateForm}>
-              <div className="ml-4 mr-4 my-2">
-                <p className="text-sm font-medium">Username</p>
-                <input
-                  type="text"
-                  className="rounded-md w-full p-1 text-sm"
-                  placeholder="Username..."
-                  onChange={(e) => {
-                    setNewProfileUsername(e.target.value);
-                  }}
-                  required
-                />
-              </div>
-              <div className="ml-4 mr-4 my-2">
-                <p className="text-sm font-medium">Bio</p>
-                <textarea
-                  type="text"
-                  className="rounded-md w-full p-1 text-sm h-24"
-                  placeholder="Bio..."
-                  onChange={(e) => {
-                    setNewProfileBio(e.target.value);
-                  }}
-                  required
-                />
-              </div>
-              <div className="ml-4 mr-4 my-2">
-                <label className="text-sm font-medium" htmlFor="file_input">
-                  Picture
-                </label>
-                <input
-                  className="block w-full text-sm border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:border-none file:text-black file:bg-gray-200"
-                  id="file_input"
-                  type="file"
-                  onChange={handleFileChange}
-                  required
-                />
-              </div>
-              <div className="ml-4 mr-4 my-4 flex justify-center items-center">
-                <button
-                  className=" bg-primary text-white w-full rounded-md"
-                  type="submit"
-                >
-                  Save Profile
-                </button>
-              </div>
-            </form>
+            ></div>
+            <div className="w-[90vw] h-[90vh] overflow-x-hidden overflow-y-auto overscroll-contain fixed top-[5vh] left-[5vw] bg-background z-1 shadow-lg rounded-md">
+              <BsXLg
+                className="text-2xl bg-background hover:bg-gray-100 rounded-full m-4 hover:cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditingProfile(false);
+                }}
+              />
+              <form onSubmit={validateForm}>
+                <div className="ml-4 mr-4 my-2">
+                  <p className="text-sm font-medium">Username</p>
+                  <input
+                    type="text"
+                    className="rounded-md w-full p-1 text-sm"
+                    placeholder="Username..."
+                    onChange={(e) => {
+                      setNewProfileUsername(e.target.value);
+                    }}
+                    required
+                  />
+                </div>
+                <div className="ml-4 mr-4 my-2">
+                  <p className="text-sm font-medium">Bio</p>
+                  <textarea
+                    type="text"
+                    className="rounded-md w-full p-1 text-sm h-24"
+                    placeholder="Bio..."
+                    onChange={(e) => {
+                      setNewProfileBio(e.target.value);
+                    }}
+                    required
+                  />
+                </div>
+                <div className="ml-4 mr-4 my-2">
+                  <label className="text-sm font-medium" htmlFor="file_input">
+                    Picture
+                  </label>
+                  <input
+                    className="block w-full text-sm border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:border-none file:text-black file:bg-gray-200"
+                    id="file_input"
+                    type="file"
+                    onChange={handleFileChange}
+                    required
+                  />
+                </div>
+                <div className="ml-4 mr-4 my-4 flex justify-center items-center">
+                  <button
+                    className=" bg-primary text-white w-full rounded-md"
+                    type="submit"
+                  >
+                    Save Profile
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

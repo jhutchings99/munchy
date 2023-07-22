@@ -144,7 +144,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="fixed bottom-0 flex justify-around md:justify-center md:gap-28 w-full p-2 bg-background items-center md:flex-col md:top-0 md:w-[30vw] md:items-start md:pl-12 lg:w-[20vw] lg:pl-19">
+    <div className="fixed bottom-0 flex justify-around border-r-primary border-r-0 sm:border-r-0 sm:border-r-2 md:border-r-2 lg:border-r-2 md:justify-center md:gap-28 w-full p-2 bg-white items-center md:flex-col md:top-0 md:w-[30vw] md:items-start md:pl-12 lg:w-[30vw] lg:pl-[10vw]">
       <div className="flex items-center gap-2 text-lg hover:cursor-pointer select-none hidden md:flex">
         <img
           src={Logo}

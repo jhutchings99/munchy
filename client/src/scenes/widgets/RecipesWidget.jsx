@@ -56,8 +56,6 @@ const RecipesWidget = ({ recipeId, isRecipe = false }) => {
     fetchData();
   }, []);
 
-  const handleOnCreateRecipe = () => {};
-
   if (user === null) {
     return (
       <div
@@ -97,7 +95,7 @@ const RecipesWidget = ({ recipeId, isRecipe = false }) => {
   }
 
   return (
-    <div className="flex flex-col w-full h-full mb-24 md:ml-[30vw] lg:ml-[20vw] lg:w-[50vw]">
+    <div className="flex flex-col w-full h-full mb-24 md:ml-[30vw] lg:w-[40vw] lg:ml-[30vw]">
       <div className="flex items-center justify-center gap-2">
         <img src={Logo} alt="Munchy Logo" className="h-10 w-10 items-center" />
         <p className="font-medium text-large">Munchy</p>

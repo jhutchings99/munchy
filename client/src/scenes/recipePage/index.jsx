@@ -114,7 +114,7 @@ const RecipePage = () => {
   return (
     <div className="mb-24">
       <Navbar />
-      <div className="border-b-[1px] border-primary w-full p-2 bg-white md:max-w-[70vw] md:ml-[30vw] lg:ml-[20vw] lg:max-w-[80vw]">
+      <div className="border-b-[1px] border-primary w-full p-2 bg-white md:max-w-[70vw] md:ml-[30vw] lg:ml-[30vw] lg:max-w-[70vw]">
         <div className="m-2">
           <BsArrowLeft
             className="text-2xl bg-white rounded-full hover:cursor-pointer hover:bg-gray-100"
@@ -198,7 +198,7 @@ const RecipePage = () => {
             <img
               src={recipe.pictureUrl}
               alt={`Picture of ${recipe.title}`}
-              className="aspect-w-16 aspect-h-9 max-w-[70vw] sm:max-w-[60vw] md:max-w-[50vw] lg:max-w-[40vw]"
+              className="aspect-w-16 aspect-h-9 max-w-[70vw] sm:max-w-[60vw] md:max-w-[50vw] lg:max-w-[30vw]"
             />
           </div>
         </div>

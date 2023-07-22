@@ -1,4 +1,5 @@
 import Navbar from "../navbar";
+import FeaturedRecipeWidget from "../widgets/FeaturedRecipeWidget";
 import RecipesWidget from "../widgets/RecipesWidget";
 
 const HomePage = () => {
@@ -6,6 +7,7 @@ const HomePage = () => {
     <div className="flex">
       <Navbar />
       <RecipesWidget />
+      <FeaturedRecipeWidget />
     </div>
   );
 };
