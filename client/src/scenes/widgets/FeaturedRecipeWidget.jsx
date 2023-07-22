@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { BsDot } from "react-icons/bs";
-import InteractionBar from "./InteractionBar";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
