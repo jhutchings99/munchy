@@ -106,9 +106,9 @@ export const createRecipe = async (req, res) => {
     const singleIngredients = ingredients.split("\n");
     singleIngredients.forEach((ingredient) => {
       let parsedIngredient = {};
-      const splitIngredient = ingredient.split(" ");
-      parsedIngredient["quantity"] = splitIngredient[0];
-      parsedIngredient["name"] = splitIngredient[1];
+      const splitIndex = ingredient.indexOf(" "); // Find the index of the first space
+      parsedIngredient["quantity"] = ingredient.slice(0, splitIndex).trim();
+      parsedIngredient["name"] = ingredient.slice(splitIndex + 1).trim();
       parsedIngredients.push(parsedIngredient);
     });
 
