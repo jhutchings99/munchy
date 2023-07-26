@@ -85,7 +85,7 @@ const FeaturedRecipeWidget = ({ onBookmarkChange = null }) => {
   }
 
   return (
-    <div className="h-[100vh] w-[30vw] hidden lg:block border-l-2 border-l-primary pt-12 fixed left-[70vw] top-0">
+    <div className="h-[100vh] w-[30vw] hidden lg:block border-l-2 border-l-primary pt-12 fixed left-[70vw] top-0 overflow-y-auto">
       <div className="flex justify-center items-center flex-col">
         <p className="font-medium text-xl mb-8">Featured Recipe</p>
         <div

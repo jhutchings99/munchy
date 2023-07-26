@@ -112,7 +112,7 @@ const RecipePage = () => {
   }
 
   return (
-    <div className="mb-24">
+    <div className="mb-24 overflow-hidden">
       <Navbar />
       <div className="border-b-[1px] border-primary w-full p-2 bg-white md:max-w-[70vw] md:ml-[30vw] lg:ml-[30vw] lg:max-w-[70vw]">
         <div className="m-2">
@@ -198,8 +198,30 @@ const RecipePage = () => {
             <img
               src={recipe.pictureUrl}
               alt={`Picture of ${recipe.title}`}
-              className="aspect-w-16 aspect-h-9 max-w-[70vw] sm:max-w-[60vw] md:max-w-[50vw] lg:max-w-[30vw]"
+              className="aspect-w-16 aspect-h-9 max-w-[70vw] sm:max-w-[60vw] md:max-w-[50vw] lg:max-w-[30vw] mb-4"
             />
+            <p className="text-sm font-medium">Ingredients</p>
+            <ul className="list-disc  ml-5 mb-4">
+              {recipe.ingredients.map(({ name, quantity }) => (
+                <li
+                  key={name}
+                  className="max-w-[70vw] md:max-w-[50vw] lg:max-w-[50vw]"
+                >
+                  {quantity} {name}
+                </li>
+              ))}
+            </ul>
+            <p className="text-sm font-medium">Preparation Instructions</p>
+            <ul className="list-decimal  ml-5 mb-4">
+              {recipe.preparationInstructions.map((instruction) => (
+                <li
+                  key={instruction}
+                  className="max-w-[70vw] md:max-w-[50vw] lg:max-w-[50vw] mb-2"
+                >
+                  {instruction}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
         <InteractionBar recipeId={recipe._id} onNewReply={handleNewReply} />
